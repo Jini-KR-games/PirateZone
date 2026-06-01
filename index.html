@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PirateZone – Zeig Flagge und erzähl deine Geschichte</title>
+  <style>
+    :root {
+      --navy: #071722;
+      --navy-2: #0d2635;
+      --storm: #173747;
+      --petrol: #1f6173;
+      --mist: #d9e3e7;
+      --card: #f8fbfc;
+      --card-2: #eef5f7;
+      --ink: #10202a;
+      --muted: #62737c;
+      --line: #c7d7dd;
+      --accent: #d7aa4b;
+      --accent-2: #b9852f;
+      --shadow: rgba(0, 0, 0, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #d7e3e7 0%, #edf4f6 42%, #dce7ea 100%);
+      min-height: 100vh;
+    }
+
+    .hero {
+      min-height: 290px;
+      color: #f6fbfd;
+      background:
+        linear-gradient(180deg, rgba(7,23,34,0.35), rgba(7,23,34,0.9)),
+        url("https://janinawiegand.de/wp-content/uploads/PirateZone-Header.png"),
+        radial-gradient(circle at 20% 12%, rgba(255,255,255,0.12), transparent 18%),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 18px),
+        linear-gradient(120deg, #071722 0%, #102f41 52%, #29343e 100%);
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 5px solid rgba(215,170,75,0.92);
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .hero-inner {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 2rem 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      letter-spacing: 0.02em;
+      line-height: 1;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.65);
+    }
+
+    .slogan {
+      margin: 0.75rem 0 0;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: #e8f2f5;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.65);
+    }
+
+    .login-button {
+      border: 2px solid rgba(255,255,255,0.86);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.85rem 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .login-button:hover { background: rgba(255,255,255,0.24); }
+
+    main {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 1.25rem auto 0;
+      padding-bottom: 2rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .tab-button {
+      border: 2px solid var(--storm);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 0.7rem 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    .tab-button.active {
+      background: var(--storm);
+      color: #fff;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .intro, .profile-card, .feed-card, .locked-section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 8px 24px rgba(16,32,42,0.13);
+    }
+
+    .intro {
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+      line-height: 1.45;
+    }
+
+    .intro p { margin: 0.35rem 0; }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .profile-card { overflow: hidden; }
+
+    .profile-top {
+      min-height: 230px;
+      padding: 1rem;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(145deg, #123044, #27677b);
+    }
+
+    .profile-image {
+      width: 178px;
+      height: 178px;
+      object-fit: cover;
+      border-radius: 30px;
+      border: 4px solid rgba(255,255,255,0.82);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.35);
+      background: #dce9ed;
+    }
+
+    .profile-body { padding: 1rem; }
+    .profile-body h2 { margin: 0 0 0.45rem; font-size: 1.45rem; }
+    .tagline { color: var(--muted); font-style: italic; margin: 0 0 0.85rem; }
+
+    .facts { display: grid; gap: 0.45rem; }
+    .fact {
+      background: var(--card-2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.55rem;
+      line-height: 1.35;
+    }
+    .fact strong { color: var(--storm); }
+
+    .locked-section { margin-top: 1.1rem; padding: 1rem; }
+    .locked-section h2 { margin: 0 0 0.8rem; font-size: 1.25rem; }
+
+    .locked-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.55rem;
+    }
+
+    .locked {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.7rem;
+      background: var(--card-2);
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      font-weight: 800;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .locked:hover { outline: 2px solid var(--petrol); color: var(--ink); }
+
+    .feed-card { padding: 1rem; }
+    .feed-title { margin: 0 0 0.8rem; font-size: 1.65rem; }
+
+    .post {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 0.9rem;
+      margin-bottom: 0.85rem;
+      line-height: 1.45;
+      box-shadow: 0 4px 13px rgba(16,32,42,0.08);
+    }
+
+    .post.nebelnase { border-left: 6px solid #226d81; }
+    .post.eisenzahn { border-left: 6px solid #805334; }
+    .post.rotfeder { border-left: 6px solid #963f51; }
+    .post.silbermoewe { border-left: 6px solid #7a8b96; }
+
+    .post-head {
+      display: flex;
+      gap: 0.55rem;
+      align-items: center;
+      margin-bottom: 0.45rem;
+    }
+
+    .mini-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--line);
+      flex: 0 0 auto;
+      background: #dce9ed;
+    }
+
+    .handle { font-weight: 800; }
+    .time { color: var(--muted); font-size: 0.82rem; }
+
+    .post-image {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      margin: 0.65rem 0 0.35rem;
+      display: block;
+      background: #dce9ed;
+    }
+
+    .image-caption {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0.15rem 0 0.35rem;
+    }
+
+    .thread {
+      margin-left: 1.1rem;
+      border-left: 2px dashed #b6c8cf;
+      padding-left: 0.85rem;
+      margin-top: 0.65rem;
+    }
+
+    .reply {
+      background: var(--card-2);
+      border-radius: 12px;
+      padding: 0.6rem;
+      margin: 0.5rem 0;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(7,23,34,0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 20;
+    }
+
+    .modal {
+      width: min(520px, 100%);
+      background: #fff;
+      border-radius: 22px;
+      padding: 1.25rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      border: 1px solid var(--line);
+    }
+
+    .modal h2 { margin-top: 0; }
+    .modal-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.7rem 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+    .btn.primary { background: var(--storm); color: white; }
+    .btn.secondary { background: var(--card-2); color: var(--ink); border: 1px solid var(--line); }
+
+    .quiz-question {
+      background: var(--card-2);
+      padding: 0.85rem;
+      border-radius: 16px;
+      margin: 0.8rem 0;
+      border: 1px solid var(--line);
+    }
+
+    .quiz-question label { display: block; margin: 0.35rem 0; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 1.5rem 1rem 2rem;
+      font-size: 0.9rem;
+    }
+
+.older-posts {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.older-posts-button {
+  background: var(--storm);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.older-posts-button:hover {
+  background: var(--petrol);
+}
+
+    @media (max-width: 560px) {
+      .hero { min-height: 230px; }
+      .profile-image { width: 150px; height: 150px; }
+      .profile-top { min-height: 200px; }
+      .post-image { max-height: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>🏴‍☠️ PirateZone</h1>
+        <p class="slogan">Zeig Flagge und erzähl deine Geschichte.</p>
+      </div>
+      <button class="login-button" onclick="openLogin()">Anmelden</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs" role="tablist" aria-label="Bereiche der PirateZone">
+      <button class="tab-button active" onclick="showTab('profiles', this)">Profile</button>
+      <button class="tab-button" onclick="showTab('feed', this)">Schiffsgeflüster</button>
+    </div>
+
+    <section id="profiles" class="tab-panel active">
+      <section class="intro">
+        <p><strong>Willkommen in der PirateZone!</strong></p>
+        <p>Der digitale Treffpunkt für Piratinnen und Piraten aus allen sieben Meeren.</p>
+      </section>
+
+      <section class="profile-grid" aria-label="Piratenprofile">
+        <article class="profile-card" id="nebelnase">
+          <div class="profile-top">
+            <img class="profile-image" src="https://janinawiegand.de/wp-content/uploads/Nebelnase.png" alt="Profilbild von Nebelnase" />
+          </div>
+          <div class="profile-body">
+            <h2>Nebelnase</h2>
+            <p class="tagline">„Klabauterkäse! Heute wird Beute gemacht.“</p>
+            <div class="facts">
+              <div class="fact"><strong>Flaggensymbol:</strong> Krake</div>
+              <div class="fact"><strong>Lieblingshafen:</strong> Korallenhafen</div>
+              <div class="fact"><strong>Lieblingsfluch:</strong> Klabauterkäse!</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="profile-card" id="eisenzahn">
+          <div class="profile-top" style="background: linear-gradient(145deg, #2c2f33, #805334);">
+            <img class="profile-image" src="https://janinawiegand.de/wp-content/uploads/Eisenzahn.png" alt="Profilbild von Eisenzahn" />
+          </div>
+          <div class="profile-body">
+            <h2>Eisenzahn</h2>
+            <p class="tagline">„Schiffszwieback! Aus dem Weg!“</p>
+            <div class="facts">
+              <div class="fact"><strong>Flaggensymbol:</strong> Anker</div>
+              <div class="fact"><strong>Lieblingshafen:</strong> Nebelbucht</div>
+              <div class="fact"><strong>Lieblingsfluch:</strong> Schiffszwieback!</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="profile-card" id="rotfeder">
+          <div class="profile-top" style="background: linear-gradient(145deg, #442338, #963f51);">
+            <img class="profile-image" src="https://janinawiegand.de/wp-content/uploads/Rotfeder.png" alt="Profilbild von Rotfeder" />
+          </div>
+          <div class="profile-body">
+            <h2>Rotfeder</h2>
+            <p class="tagline">„Bei den tanzenden Tentakeln! Ich verliere nie die Richtung.“</p>
+            <div class="facts">
+              <div class="fact"><strong>Flaggensymbol:</strong> Kompassrose</div>
+              <div class="fact"><strong>Lieblingshafen:</strong> Leuchtturmhafen</div>
+              <div class="fact"><strong>Lieblingsfluch:</strong> Bei den tanzenden Tentakeln!</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="profile-card" id="silbermoewe">
+          <div class="profile-top" style="background: linear-gradient(145deg, #344555, #7a8b96);">
+            <img class="profile-image" src="https://janinawiegand.de/wp-content/uploads/Silbermoewe.png" alt="Profilbild von Silbermöwe" />
+          </div>
+          <div class="profile-body">
+            <h2>Silbermöwe</h2>
+            <p class="tagline">„Beim Bart des Seehunds! Ich bin schneller als der Wind.“</p>
+            <div class="facts">
+              <div class="fact"><strong>Flaggensymbol:</strong> Seestern</div>
+              <div class="fact"><strong>Lieblingshafen:</strong> Muschelhafen</div>
+              <div class="fact"><strong>Lieblingsfluch:</strong> Beim Bart des Seehunds!</div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="locked-section">
+        <h2>Weitere Profile</h2>
+        <div class="locked-list">
+          <button class="locked" onclick="openPrivateProfile('Donnerlotte')">🔒 Donnerlotte</button>
+          <button class="locked" onclick="openPrivateProfile('Muschelmats')">🔒 Muschelmats</button>
+          <button class="locked" onclick="openPrivateProfile('Käpt’n Knoten')">🔒 Käpt’n Knoten</button>
+          <button class="locked" onclick="openPrivateProfile('Salzwasser-Sina')">🔒 Salzwasser-Sina</button>
+          <button class="locked" onclick="openPrivateProfile('Leichtmatrose Lino')">🔒 Leichtmatrose Lino</button>
+          <button class="locked" onclick="openPrivateProfile('Kanonen-Karla')">🔒 Kanonen-Karla</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="feed" class="tab-panel">
+      <section class="feed-card">
+        <h2 class="feed-title">Schiffsgeflüster</h2>
+
+        <article class="post nebelnase">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Nebelnase.png" alt="Nebelnase" />
+            <div><div class="handle">Nebelnase</div><div class="time">gerade eben</div></div>
+          </div>
+          Klabauterkäse! Während andere noch alte Münzen zählen, stehe ich kurz vor dem größten Fund aller Zeiten.
+          <div class="thread">
+            <div class="reply"><strong>Rotfeder:</strong> Große Worte. Hoffentlich findest du diesmal auch den richtigen Anleger.</div>
+            <div class="reply"><strong>Nebelnase:</strong> Sehr witzig. Heute hole ich mir einen Schatz, von dem alle noch lange reden werden.</div>
+          </div>
+        </article>
+
+        <article class="post eisenzahn">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Eisenzahn.png" alt="Eisenzahn" />
+            <div><div class="handle">Eisenzahn</div><div class="time">vor 10 Minuten</div></div>
+          </div>
+          Ich habe heute eine Schatzkiste gefunden. Leider war nur alter Schiffszwieback drin.
+          <div class="thread">
+            <div class="reply"><strong>Nebelnase:</strong> Pah! Ich werde gleich einen Schatz heben – den wertvollsten aller Zeiten!</div>
+          </div>
+        </article>
+
+        <article class="post silbermoewe">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Silbermoewe.png" alt="Silbermöwe" />
+            <div><div class="handle">Silbermöwe</div><div class="time">vor 1 Tag</div></div>
+          </div>
+          Neue Segel gesetzt. Morgen geht es Richtung Muschelhafen.
+          <div class="thread">
+            <div class="reply"><strong>Eisenzahn:</strong> Beim nächsten Mal nehme ich dein Fernrohr mit. Meins ist schon wieder salzig.</div>
+            <div class="reply"><strong>Silbermöwe:</strong> Nur wenn du es nicht wieder in einer Schatzkiste vergisst.</div>
+          </div>
+        </article>
+
+        <article class="post nebelnase">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Nebelnase.png" alt="Nebelnase" />
+            <div><div class="handle">Nebelnase</div><div class="time">vor 1 Tag</div></div>
+          </div>
+          Klabauterkäse! Wer hat mein drittes Paar Ohrstöpsel gesehen?
+          <img class="post-image" src="https://janinawiegand.de/wp-content/uploads/Ohrstoepsel.png" alt="Nebelnase zeigt seine Ohrstöpsel" />
+          <p class="image-caption">Sicher ist sicher.</p>
+          <div class="thread">
+            <div class="reply"><strong>Silbermöwe:</strong> Drittes Paar? Du hast doch schon zwei.</div>
+            <div class="reply"><strong>Nebelnase:</strong> Man kann nie vorsichtig genug sein.</div>
+            <div class="reply"><strong>Rotfeder:</strong> Vor allem, wenn irgendwo wieder dieses Bum-Bum-Bum losgeht.</div>
+            <div class="reply"><strong>Nebelnase:</strong> Thema beendet.</div>
+          </div>
+        </article>
+
+        <article class="post eisenzahn">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Eisenzahn.png" alt="Eisenzahn" />
+            <div><div class="handle">Eisenzahn</div><div class="time">vor 2 Tagen</div></div>
+          </div>
+          Mein Fernrohr glänzt wieder. Endlich sehe ich schon aus drei Meilen Entfernung, wer Angst bekommt.
+          <div class="thread">
+            <div class="reply"><strong>Rotfeder:</strong> Dann schau mal Richtung Nebelinsel.</div>
+            <div class="reply"><strong>Nebelnase:</strong> Nicht schon wieder diese Geschichte.</div>
+          </div>
+        </article>
+
+        <article class="post rotfeder">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Rotfeder.png" alt="Rotfeder" />
+            <div><div class="handle">Rotfeder</div><div class="time">vor 3 Tagen</div></div>
+          </div>
+          Kleine Erinnerung: Wer geheime Verstecke hat, sollte sie vielleicht nicht in Bildunterschriften verraten.
+          <div class="thread">
+            <div class="reply"><strong>Muschelmats:</strong> 🔒 Dieses Profil ist privat.</div>
+            <div class="reply"><strong>Eisenzahn:</strong> Wer macht denn sowas?</div>
+          </div>
+        </article>
+
+      <article class="post rotfeder">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Rotfeder.png" alt="Rotfeder" />
+            <div><div class="handle">Rotfeder</div><div class="time">vor 5 Tagen</div></div>
+          </div>
+          Manche Piraten tanzen. Andere halten sich lieber die Ohren zu.
+          <div class="thread">
+            <div class="reply"><strong>Silbermöwe:</strong> Das Bild sagt alles.</div>
+            <div class="reply"><strong>Nebelnase:</strong> Ihr übertreibt maßlos.</div>
+          </div>
+        </article>
+
+        <article class="post silbermoewe">
+          <div class="post-head">
+            <img class="mini-avatar" src="https://janinawiegand.de/wp-content/uploads/Silbermoewe.png" alt="Silbermöwe" />
+            <div><div class="handle">Silbermöwe</div><div class="time">vor 6 Tagen</div></div>
+          </div>
+          Neues Bild vom Fest auf der Nebelinsel. Was für ein Abend!
+          <img class="post-image" src="https://janinawiegand.de/wp-content/uploads/Trommelfest.png" alt="Piratenfest mit Trommelgruppe im Hintergrund" />
+          <div class="thread">
+            <div class="reply"><strong>Rotfeder:</strong> Nebelnase war schneller verschwunden als mein letzter Goldtaler.</div>
+            <div class="reply"><strong>Eisenzahn:</strong> Ich erinnere mich. Erst große Sprüche, dann plötzlich weg.</div>
+            <div class="reply"><strong>Nebelnase:</strong> Ich war nicht weg. Ich habe nur kurz die frische Seeluft geprüft.</div>
+          </div>
+        </article>
+<div class="older-posts">
+    <button class="older-posts-button" onclick="showOlderPostsInfo()">
+        🔒 Ältere Posts anzeigen
+    </button>
+</div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    PirateZone ist eine Spielseite für das Escape Game „Mission Datenschutz – Insel Auria“.
+  </footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModal(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="event.stopPropagation()">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId, button) {
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      button.classList.add('active');
+    }
+
+    function openModal(html) {
+      document.getElementById('modalContent').innerHTML = html;
+      document.getElementById('modalBackdrop').style.display = 'flex';
+    }
+
+    function closeModal(event) {
+      if (!event || event.target.id === 'modalBackdrop') {
+        document.getElementById('modalBackdrop').style.display = 'none';
+      }
+    }
+
+    function openPrivateProfile(name) {
+      openModal(`
+        <h2 id="modalTitle">🔒 ${name}</h2>
+        <p>Dieses Profil ist privat.</p>
+        <p>Nur bestätigte Freundinnen und Freunde können die Inhalte sehen.</p>
+        <div class="modal-actions">
+          <button class="btn primary" onclick="closeModal()">Schließen</button>
+        </div>
+      `);
+    }
+
+    function openLogin() {
+      openModal(`
+        <h2 id="modalTitle">PirateZone-Anmeldung</h2>
+        <p>Du hast noch kein Konto? Dann starte die Piratenprüfung.</p>
+        <div class="modal-actions">
+          <button class="btn primary" onclick="openQuiz()">Piratenprüfung starten</button>
+          <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+        </div>
+      `);
+    }
+
+    function openQuiz() {
+      openModal(`
+        <h2 id="modalTitle">Piratenprüfung</h2>
+        <div class="quiz-question">
+          <strong>1. Was gehört auf jedes gute Piratenschiff?</strong>
+          <label><input type="radio" name="q1"> Ein glitzernder Badeanzug</label>
+          <label><input type="radio" name="q1"> Eine Flagge</label>
+          <label><input type="radio" name="q1"> Eine Kaffeemaschine mit Goldrand</label>
+        </div>
+        <div class="quiz-question">
+          <strong>2. Wie begrüßt man eine Piratin oder einen Piraten?</strong>
+          <label><input type="radio" name="q2"> Ahoi!</label>
+          <label><input type="radio" name="q2"> Guten Matheunterricht!</label>
+          <label><input type="radio" name="q2"> Bitte leise sprechen.</label>
+        </div>
+        <div class="quiz-question">
+          <strong>3. Wie viele Goldstücke liegen in der geheimen Kiste von Käpt’n Knoten?</strong>
+          <label><input type="radio" name="q3"> 7</label>
+          <label><input type="radio" name="q3"> 700</label>
+          <label><input type="radio" name="q3"> Das weiß nur Käpt’n Knoten</label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn primary" onclick="quizFail()">Prüfung abschicken</button>
+          <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+        </div>
+      `);
+    }
+
+    function quizFail() {
+      openModal(`
+        <h2 id="modalTitle">Registrierung nicht möglich</h2>
+        <p>Die PirateZone nimmt im Moment keine neuen Mitglieder auf.</p>
+        <p>Versuche es später noch einmal.</p>
+        <div class="modal-actions">
+          <button class="btn primary" onclick="closeModal()">Schließen</button>
+        </div>
+      `);
+    }
+
+function showOlderPostsInfo() {
+  openModal(`
+    <h2 id="modalTitle">Ältere Beiträge</h2>
+    <p>🔒 Ältere Beiträge sind nur für angemeldete PirateZone-Mitglieder sichtbar.</p>
+        <div class="modal-actions">
+      <button class="btn primary" onclick="closeModal()">Schließen</button>
+    </div>
+  `);
+}
+  </script>
+</body>
+</html>
